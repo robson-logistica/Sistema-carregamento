@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Entrada de Veículo</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:white;
+padding:30px;
+border-radius:10px;
+width:350px;
+}
+
+input,button{
+width:100%;
+padding:10px;
+margin-top:10px;
+}
+
+button{
+background:#28a745;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Entrada de Veículo</h2>
+
+<input id="motorista" placeholder="Motorista">
+<input id="empresa" placeholder="Empresa">
+<input id="placa" placeholder="Placa">
+
+<button onclick="salvar()">Cadastrar</button>
+
+</div>
+
+<script>
+
+function salvar(){
+
+let motorista=document.getElementById("motorista").value
+let empresa=document.getElementById("empresa").value
+let placa=document.getElementById("placa").value
+
+let fila=JSON.parse(localStorage.getItem("fila")) || []
+
+let agora = new Date()
+
+fila.push({
+
+motorista:motorista,
+empresa:empresa,
+placa:placa,
+
+status:"CADASTRADO",
+
+data:agora.toLocaleDateString(),
+horaCadastro:agora.toLocaleTimeString(),
+
+horaCarregando:"",
+horaFinalizado:"",
+horaSaiu:""
+
+})
+
+localStorage.setItem("fila",JSON.stringify(fila))
+
+alert("Veículo cadastrado!")
+
+document.getElementById("motorista").value=""
+document.getElementById("empresa").value=""
+document.getElementById("placa").value=""
+
+}
+
+</script>
+
+</body>
+</html>

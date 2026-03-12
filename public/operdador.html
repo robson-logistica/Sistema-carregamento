@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Painel Operador</title>
+
+<style>
+
+body{
+font-family:Arial;
+padding:30px;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+}
+
+h2{
+margin-bottom:20px;
+font-size:28px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+color:black;
+border-radius:8px;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+th{
+background:#1a73e8;
+color:white;
+padding:12px;
+font-size:15px;
+}
+
+td{
+border-bottom:1px solid #eee;
+padding:10px;
+text-align:center;
+font-size:14px;
+}
+
+tr:hover{
+background:#f4f8ff;
+}
+
+button{
+padding:8px 14px;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:6px;
+font-weight:bold;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.iniciar{
+background:#007bff;
+}
+
+.finalizar{
+background:#28a745;
+}
+
+.saiu{
+background:#e63946;
+}
+
+.filtros{
+margin-bottom:20px;
+background:rgba(255,255,255,0.1);
+padding:15px;
+border-radius:10px;
+}
+
+select,input{
+padding:8px;
+border-radius:5px;
+border:none;
+margin-left:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Painel de Carregamento</h2>
+
+<div class="filtros">
+
+Status:
+
+<select id="filtroStatus" onchange="carregar()">
+
+<option value="">Todos</option>
+<option value="CADASTRADO">Cadastrado</option>
+<option value="CARREGANDO">Carregando</option>
+<option value="FINALIZADO">Finalizado</option>
+<option value="SAIU">Saiu</option>
+
+</select>
+
+Data:
+
+<input type="text" id="filtroData" placeholder="ex: 07/03/2026">
+
+<button onclick="carregar()">Pesquisar</button>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Motorista</th>
+<th>Empresa</th>
+<th>Placa</th>
+<th>Status</th>
+<th>Data</th>
+<th>Ação</th>
+<th>Cadastro</th>
+<th>Início Carga</th>
+<th>Finalizado</th>
+<th>Saiu</th>
+<th>Tempo</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tabela"></tbody>
+
+</table>
+
+<script>
+
+function carregar(){
+
+let fila = JSON.parse(localStorage.getItem("fila")) || []
+
+let filtroStatus = document.getElementById("filtroStatus").value
+let filtroData = document.getElementById("filtroData").value
+
+let html=""
+
+fila.forEach((v,i)=>{
+
+if(filtroStatus && v.status!=filtroStatus) return
+if(filtroData && v.data!=filtroData) return
+
+let botao=""
+
+if(v.status==="CADASTRADO"){
+
+botao=`<button class="iniciar" onclick="mudar(${i},'CARREGANDO')">Iniciar</button>`
+
+}
+
+else if(v.status==="CARREGANDO"){
+
+botao=`<button class="finalizar" onclick="mudar(${i},'FINALIZADO')">Finalizar</button>`
+
+}
+
+else if(v.status==="FINALIZADO"){
+
+botao=`<button class="saiu" onclick="mudar(${i},'SAIU')">Saiu</button>`
+
+}
+
+else{
+
+botao="Concluído"
+
+}
+
+html+=`
+
+<tr>
+
+<td>${v.motorista}</td>
+<td>${v.empresa}</td>
+<td>${v.placa}</td>
+<td>${v.status}</td>
+<td>${v.data}</td>
+<td>${botao}</td>
+<td>${v.horaCadastro || ""}</td>
+<td>${v.horaCarregando || ""}</td>
+<td>${tempoDecorrido(v.horaCarregando)}</td>
+<td>${v.horaFinalizado || ""}</td>
+<td>${v.horaSaiu || ""}</td>
+
+</tr>
+
+`
+
+})
+
+document.getElementById("tabela").innerHTML=html
+
+}
+
+function mudar(i,status){
+
+let fila = JSON.parse(localStorage.getItem("fila"))
+
+let agora = new Date().toLocaleTimeString()
+
+if(status==="CARREGANDO"){
+fila[i].horaCarregando=agora
+}
+
+if(status==="FINALIZADO"){
+fila[i].horaFinalizado=agora
+}
+
+if(status==="SAIU"){
+fila[i].horaSaiu=agora
+}
+
+fila[i].status=status
+
+localStorage.setItem("fila",JSON.stringify(fila))
+
+carregar()
+
+}
+
+carregar()
+
+function tempoDecorrido(hora){
+
+if(!hora) return ""
+
+let inicio = new Date("1970-01-01T"+hora)
+
+let agora = new Date()
+
+let agoraHora = new Date("1970-01-01T"+agora.toLocaleTimeString())
+
+let diff = Math.floor((agoraHora - inicio)/1000)
+
+let min = Math.floor(diff/60)
+let seg = diff % 60
+
+return min+"m "+seg+"s"
+
+}
+
+</script>
+
+</body>
+
+</html>

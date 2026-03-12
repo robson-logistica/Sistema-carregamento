@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Painel Logístico</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#141e30,#243b55);
+color:white;
+}
+
+header{
+background:#000;
+padding:20px;
+text-align:center;
+font-size:45px;
+letter-spacing:3px;
+}
+
+#relogio{
+text-align:center;
+font-size:40px;
+margin-top:10px;
+color:#00ffcc;
+}
+
+#destaque{
+text-align:center;
+font-size:100px;
+color:#00ff90;
+margin:30px 0;
+font-weight:bold;
+animation:piscar 1s infinite;
+}
+
+@keyframes piscar{
+0%{opacity:1;}
+50%{opacity:0.3;}
+100%{opacity:1;}
+}
+
+table{
+width:95%;
+margin:auto;
+border-collapse:collapse;
+font-size:24px;
+background:rgba(255,255,255,0.05);
+}
+
+th{
+background:#1a73e8;
+padding:15px;
+}
+
+td{
+padding:15px;
+border-bottom:1px solid rgba(255,255,255,0.1);
+text-align:center;
+}
+
+.status-cadastrado{color:#ccc;}
+.status-carregando{color:#00bfff;}
+.status-finalizado{color:#00ff90;font-weight:bold;}
+
+</style>
+</head>
+
+<body>
+
+<header>PAINEL DE CARREGAMENTO</header>
+
+<div id="relogio"></div>
+<div id="destaque"></div>
+
+<table>
+<thead>
+<tr>
+<th>Motorista</th>
+<th>Empresa</th>
+<th>Placa</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+
+<audio id="beep">
+<source src="https://www.soundjay.com/buttons/sounds/beep-07.mp3">
+</audio>
+
+<script>
+
+let jaChamados = {}
+
+function atualizarRelogio(){
+let agora = new Date()
+document.getElementById("relogio").innerHTML =
+agora.toLocaleDateString()+" - "+agora.toLocaleTimeString()
+}
+
+setInterval(atualizarRelogio,1000)
+atualizarRelogio()
+
+function falar(texto){
+let msg = new SpeechSynthesisUtterance(texto)
+msg.lang="pt-BR"
+msg.rate=0.9
+msg.volume=1
+speechSynthesis.speak(msg)
+}
+
+function chamarMotorista(v){
+
+if(!jaChamados[v.placa]){
+jaChamados[v.placa]=0
+}
+
+if(jaChamados[v.placa] < 3){
+
+document.getElementById("beep").play()
+
+setTimeout(()=>{
+falar(
+"Atenção motorista "+v.motorista+
+" da empresa "+v.empresa+
+". Veículo de placa "+v.placa+
+" está carregado. Favor retirar."
+)
+},1000)
+
+jaChamados[v.placa]++
+
+}
+}
+
+function atualizar(){
+
+let fila = JSON.parse(localStorage.getItem("fila")) || []
+
+let html=""
+let placaDestaque=""
+
+fila.forEach(v=>{
+
+if(v.status==="SAIU") return
+
+let classeStatus=""
+
+if(v.status==="CADASTRADO") classeStatus="status-cadastrado"
+if(v.status==="CARREGANDO") classeStatus="status-carregando"
+if(v.status==="FINALIZADO"){
+classeStatus="status-finalizado"
+placaDestaque=v.placa
+chamarMotorista(v)
+}
+
+html+=`
+<tr>
+<td>${v.motorista}</td>
+<td>${v.empresa}</td>
+<td>${v.placa}</td>
+<td class="${classeStatus}">${v.status}</td>
+</tr>
+`
+
+})
+
+document.getElementById("lista").innerHTML=html
+document.getElementById("destaque").innerHTML=placaDestaque
+
+}
+
+setInterval(atualizar,3000)
+atualizar()
+
+</script>
+
+</body>
+</html>
