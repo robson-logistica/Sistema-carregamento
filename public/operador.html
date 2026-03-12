@@ -47,16 +47,17 @@ background:#f4f8ff;
 }
 
 button{
-padding:8px 14px;
+padding:10px 18px;
 border:none;
 color:white;
 cursor:pointer;
 border-radius:6px;
 font-weight:bold;
-transition:0.2s;
+transition:0.3s;
 }
 
 button:hover{
+opacity:0.85;
 transform:scale(1.05);
 }
 
@@ -85,6 +86,14 @@ border-radius:5px;
 border:none;
 margin-left:5px;
 }
+  #relogioOperador{
+position:absolute;
+top:20px;
+right:30px;
+font-size:20px;
+font-weight:bold;
+color:#1a73e8;
+}
 
 </style>
 
@@ -93,7 +102,7 @@ margin-left:5px;
 <body>
 
 <h2>Painel de Carregamento</h2>
-
+<div id="relogioOperador"></div>
 <div class="filtros">
 
 Status:
@@ -112,7 +121,7 @@ Data:
 
 <input type="text" id="filtroData" placeholder="ex: 07/03/2026">
 
-<button onclick="carregar()">Pesquisar</button>
+<button style="background:#1a73e8;">Pesquisar</button>
 
 </div>
 
@@ -256,9 +265,18 @@ let seg = diff % 60
 return min+"m "+seg+"s"
 
 }
+  function atualizarRelogioOperador(){
+let agora = new Date()
+document.getElementById("relogioOperador").innerHTML =
+agora.toLocaleDateString()+" - "+agora.toLocaleTimeString()
+}
+
+setInterval(atualizarRelogioOperador,1000)
+atualizarRelogioOperador()
 
 </script>
 
 </body>
 
 </html>
+
