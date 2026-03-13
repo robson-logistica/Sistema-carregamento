@@ -94,6 +94,31 @@ font-size:20px;
 font-weight:bold;
 color:#1a73e8;
 }
+  .resumo{
+display:flex;
+gap:20px;
+margin-bottom:20px;
+}
+
+.card{
+flex:1;
+background:linear-gradient(45deg,#1a73e8,#00bfff);
+color:white;
+padding:20px;
+border-radius:10px;
+text-align:center;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.card h3{
+margin:0;
+font-size:16px;
+}
+
+.card span{
+font-size:28px;
+font-weight:bold;
+}
 
 </style>
 
@@ -102,6 +127,22 @@ color:#1a73e8;
 <body>
 
 <h2>Painel de Carregamento</h2>
+  <div class="resumo">
+  <div class="card">
+    <h3>Total Hoje</h3>
+    <span id="totalHoje">0</span>
+  </div>
+
+  <div class="card">
+    <h3>Carregando</h3>
+    <span id="totalCarregando">0</span>
+  </div>
+
+  <div class="card">
+    <h3>Finalizados</h3>
+    <span id="totalFinalizado">0</span>
+  </div>
+</div>
 <div id="relogioOperador"></div>
 <div class="filtros">
 
@@ -161,9 +202,15 @@ let filtroStatus = document.getElementById("filtroStatus").value
 let filtroData = document.getElementById("filtroData").value
 
 let html=""
-
+let totalHoje = 0
+let totalCarregando = 0
+let totalFinalizado = 0
 fila.forEach((v,i)=>{
+  
+totalHoje++
 
+if(v.status==="CARREGANDO") totalCarregando++
+if(v.status==="FINALIZADO") totalFinalizado++
 if(filtroStatus && v.status!=filtroStatus) return
 if(filtroData && v.data!=filtroData) return
 
@@ -214,7 +261,9 @@ html+=`
 `
 
 })
-
+document.getElementById("totalHoje").innerText = totalHoje
+document.getElementById("totalCarregando").innerText = totalCarregando
+document.getElementById("totalFinalizado").innerText = totalFinalizado
 document.getElementById("tabela").innerHTML=html
 
 }
@@ -279,4 +328,5 @@ atualizarRelogioOperador()
 </body>
 
 </html>
+
 
