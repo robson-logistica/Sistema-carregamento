@@ -199,7 +199,7 @@ Ocultar veículos que saíram
 </table>
 
 <script>
-
+let esconderSaiu = false
 function carregar(){
 
 let fila = JSON.parse(localStorage.getItem("fila")) || []
@@ -209,20 +209,21 @@ let filtroData = document.getElementById("filtroData").value
 let dataInicio = document.getElementById("dataInicio").value
 let dataFim = document.getElementById("dataFim").value
 let html=""
-let esconderSaiu = false
 let totalHoje = 0
 let totalCarregando = 0
 let totalFinalizado = 0
 fila.forEach((v,i)=>{
   
+if(esconderSaiu && v.status==="SAIU") return
+  
+if(filtroStatus && v.status!=filtroStatus) return
+if(filtroData && v.data!=filtroData) return
+
 totalHoje++
 if(dataInicio && v.data < dataInicio) return
 if(dataFim && v.data > dataFim) return
 if(v.status==="CARREGANDO") totalCarregando++
 if(v.status==="FINALIZADO") totalFinalizado++
-if(filtroStatus && v.status!=filtroStatus) return
-if(filtroData && v.data!=filtroData) return
-if(esconderSaiu && v.status==="SAIU") return
 let botao=""
 
 if(v.status==="CADASTRADO"){
@@ -343,6 +344,7 @@ carregar()
 </body>
 
 </html>
+
 
 
 
