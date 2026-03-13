@@ -161,9 +161,15 @@ Status:
 Data:
 
 <input type="text" id="filtroData" placeholder="ex: 07/03/2026">
+De:
+<input type="date" id="dataInicio">
 
+Até:
+<input type="date" id="dataFim">
 <button style="background:#1a73e8;">Pesquisar</button>
-
+<button onclick="ocultarSaiu()" style="background:#ff9800;">
+Ocultar veículos que saíram
+</button>
 </div>
 
 <table>
@@ -200,20 +206,23 @@ let fila = JSON.parse(localStorage.getItem("fila")) || []
 
 let filtroStatus = document.getElementById("filtroStatus").value
 let filtroData = document.getElementById("filtroData").value
-
+let dataInicio = document.getElementById("dataInicio").value
+let dataFim = document.getElementById("dataFim").value
 let html=""
+let esconderSaiu = false
 let totalHoje = 0
 let totalCarregando = 0
 let totalFinalizado = 0
 fila.forEach((v,i)=>{
   
 totalHoje++
-
+if(dataInicio && v.data < dataInicio) return
+if(dataFim && v.data > dataFim) return
 if(v.status==="CARREGANDO") totalCarregando++
 if(v.status==="FINALIZADO") totalFinalizado++
 if(filtroStatus && v.status!=filtroStatus) return
 if(filtroData && v.data!=filtroData) return
-
+if(esconderSaiu && v.status==="SAIU") return
 let botao=""
 
 if(v.status==="CADASTRADO"){
@@ -322,11 +331,18 @@ agora.toLocaleDateString()+" - "+agora.toLocaleTimeString()
 
 setInterval(atualizarRelogioOperador,1000)
 atualizarRelogioOperador()
+function ocultarSaiu(){
 
+esconderSaiu = !esconderSaiu
+
+carregar()
+
+}
 </script>
 
 </body>
 
 </html>
+
 
 
